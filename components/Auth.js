@@ -8,6 +8,8 @@ import {
   TextInput,
 } from 'react-native';
 import {Link} from 'react-router-native';
+import {connect} from 'react-redux';
+import {handleLogin, registerUser} from '../actions/auth';
 
 class Auth extends React.Component {
   state = {
@@ -18,12 +20,14 @@ class Auth extends React.Component {
   }
 
   handleSubmit = () => {
-    //TODO
-    this.setState({
-      email: '',
-      password: '',
-      passwordConfirmation: ''
-    })
+    const {dispatch, type, history} = this.props;
+    const {email, password, passwordConfirmation: password_confirmation} = this.state;
+    if (type === 'Register')
+      dispatch(registerUser({email, password, password_confirmation}, history))
+    else
+      dispatch(handleLogin({email, password}, history))
+
+    this.setState({email: '', password: '', passwordConfirmation: ''})
   }
 
   canSubmit = () => {
@@ -60,7 +64,7 @@ class Auth extends React.Component {
 
     const {type} = this.props;
 
-    const disabled = this.canSubmit();
+    const disabled = !this.canSubmit();
     return (
       <KeyboardAvoidingView
         behavior="padding"
@@ -155,4 +159,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default Auth
+export default connect()(Auth)
